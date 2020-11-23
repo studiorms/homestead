@@ -55,4 +55,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     if Vagrant.has_plugin?('vagrant-notify-forwarder')
         config.notify_forwarder.enable = true
     end
+    config.vm.boot_timeout = 600
 end
