@@ -55,5 +55,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     if Vagrant.has_plugin?('vagrant-notify-forwarder')
         config.notify_forwarder.enable = true
     end
+
+    config.vm.provider 'virtualbox' do |vb|
+      vb.customize ['modifyvm', :id, '--vram', settings['vram'] ||= '9']
+      vb.customize ['modifyvm', :id, '--graphicscontroller', settings['graphicsctrl'] ||= 'vboxvga']
+      if settings.has_key?('gui') && settings['gui']
+        vb.gui = true
+      end
+    end
     config.vm.boot_timeout = 600
 end
