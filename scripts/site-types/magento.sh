@@ -1,3 +1,14 @@
+declare -A params=$6       # Create an associative array
+
+paramsTXT=""
+if [ -n "$6" ]; then
+   for element in "${!params[@]}"
+   do
+      paramsTXT="${paramsTXT}
+      fastcgi_param ${element} ${params[$element]};"
+   done
+fi
+
 block="server {
     listen ${3:-80};
     listen ${4:-443} ssl http2;
@@ -10,6 +21,7 @@ block="server {
     index index.php;
     autoindex off;
     charset utf-8;
+    client_max_body_size 100M;
     error_page 404 403 = /errors/404.php;
 
 
@@ -26,6 +38,7 @@ block="server {
 
             fastcgi_index  index.php;
             fastcgi_param  SCRIPT_FILENAME  \$document_root\$fastcgi_script_name;
+            $paramsTXT
             include        fastcgi_params;
         }
 
@@ -48,6 +61,7 @@ block="server {
             fastcgi_index  index.php;
             fastcgi_param  SCRIPT_FILENAME  \$document_root\$fastcgi_script_name;
             fastcgi_param  PATH_INFO        \$fastcgi_path_info;
+            $paramsTXT
             include        fastcgi_params;
         }
 
@@ -154,6 +168,7 @@ block="server {
 
         fastcgi_index  index.php;
         fastcgi_param  SCRIPT_FILENAME  \$document_root\$fastcgi_script_name;
+        $paramsTXT
         include        fastcgi_params;
     }
 
@@ -183,8 +198,8 @@ block="server {
         deny all;
     }
 
-    ssl_certificate     /etc/nginx/ssl/$1.crt;
-    ssl_certificate_key /etc/nginx/ssl/$1.key;
+    ssl_certificate     /etc/ssl/certs/$1.crt;
+    ssl_certificate_key /etc/ssl/certs/$1.key;
 
 }"
 
